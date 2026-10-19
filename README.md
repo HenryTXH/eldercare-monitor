@@ -31,5 +31,7 @@ A desktop Chromium browser may run the app from `http://localhost` (secure-conte
 
 - Web Bluetooth is supported in Android Chrome but is not available in every browser/platform; use current Chrome on Android.
 - This is a local monitoring interface. It does not place emergency calls, run continuously in the background, or replace a validated clinical alert system.
-- Your sketch still uses fixed HR/SpO₂ placeholder values and fallback coordinates unless the sensor-reading logic is completed.
+- Your sketch still u`ses fixed HR/SpO₂ placeholder values and fallback coordinates unless the sensor-reading logic is completed.
+
+Checking Pages deployment.
 
