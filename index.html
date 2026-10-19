@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101010"><meta name="description" content="Local BLE elder care monitor for ESP32"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml"><title>ElderCare Monitor</title><link rel="stylesheet" href="style.css"></head>
+<body><main class="shell">
+<header class="top"><div><div class="eyebrow">ELDERCARE · BLE MONITOR</div><h1>Patient dashboard</h1></div><button id="connect" class="button primary">Scan &amp; connect</button></header>
+<section class="patient panel"><div><div id="name" class="patient-name">Waiting for patient data</div><div id="ageAddress" class="sub">Age: — | Address: —</div><div id="phone" class="sub">Tel: —</div></div><div id="connection" class="badge disconnected">● Disconnected</div></section>
+<section class="grid">
+<article class="tile"><div class="label">Heart Rate</div><div class="metric"><span id="hr">—</span><small>bpm</small></div><div class="sub" id="hrNote">Waiting for data</div></article>
+<article class="tile"><div class="label">SpO₂ Level</div><div class="metric"><span id="spo2">—</span><small>%</small></div><div class="progress"><i id="spo2Bar"></i></div></article>
+<article class="tile"><div class="label">Fall Detection</div><div id="fall" class="fall unknown">● UNKNOWN</div><div class="sub" id="fallNote">Status unavailable</div></article>
+<article class="tile"><div class="label">GPS Coordinates</div><div class="coords"><span id="lat">—</span><span id="lon">—</span></div><div class="sub" id="gpsAddress">Waiting for location</div></article>
+</section>
+<section class="panel chart"><div class="chart-head"><strong>Real-time Telemetry <span class="muted">(Heart Rate)</span></strong><span id="updated" class="sub">No data yet</span></div><canvas id="history" aria-label="Heart rate history"></canvas></section>
+<footer class="controls panel"><div id="message" role="status">Connect to ElderCare-ESP32 to begin.</div><button id="disconnect" class="button" disabled>Disconnect</button></footer>
+<div class="footnote">BLE readings are shown as received. This prototype is not a medical alarm service.</div>
+</main><script src="app.js" defer></script></body></html>
