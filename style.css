@@ -13,7 +13,10 @@ body {
     margin: 0 auto;
 }
 
-header {
+header.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     margin-bottom: 20px;
 }
 
@@ -28,6 +31,55 @@ header h1 {
     font-size: 1.75rem;
     font-weight: 700;
     margin-top: 4px;
+}
+
+/* Three dots menu styling */
+.menu-container {
+    position: relative;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: #f1f1f3;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.icon-btn:hover {
+    background-color: #27272a;
+}
+
+.dropdown-content {
+    position: absolute;
+    right: 0;
+    top: 36px;
+    background-color: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    z-index: 1000;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown-content.hidden {
+    display: none;
+}
+
+.dropdown-content a {
+    color: #f1f1f3;
+    padding: 10px 16px;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.dropdown-content a:hover {
+    background-color: #27272a;
+    border-radius: 8px;
 }
 
 .primary-btn {
@@ -97,7 +149,6 @@ header h1 {
     transition: width 0.3s ease;
 }
 
-/* Fixed Map Height to prevent blank gray box */
 #map {
     height: 250px;
     width: 100%;
