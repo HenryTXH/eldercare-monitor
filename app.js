@@ -5,6 +5,37 @@ const CHARACTERISTIC_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 let bluetoothDevice;
 let bleCharacteristic;
 
+// Toggle Three-Dot Menu
+const menuBtn = document.getElementById('menu-btn');
+const dropdownMenu = document.getElementById('dropdown-menu');
+
+menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdownMenu.classList.toggle('hidden');
+});
+
+window.addEventListener('click', () => {
+    if (!dropdownMenu.classList.contains('hidden')) {
+        dropdownMenu.classList.add('hidden');
+    }
+});
+
+// Menu item actions
+document.getElementById('menu-settings').addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Settings: Configure alert thresholds and BLE parameters.');
+});
+
+document.getElementById('menu-history').addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Telemetry History: Live logging view active.');
+});
+
+document.getElementById('menu-about').addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('ElderCare BLE Monitor v1.2 - Connected to ESP32 Gateway');
+});
+
 // Initialize Leaflet Map centered on USM / default location
 let map = L.map('map').setView([5.1521, 100.4950], 15);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -67,7 +98,6 @@ function handleData(event) {
         if (data.lat !== undefined && data.lng !== undefined) {
             document.getElementById('gps-coords').textContent = `${data.lat.toFixed(4)}°, ${data.lng.toFixed(4)}°`;
             
-            // Move map marker & center map
             marker.setLatLng([data.lat, data.lng]);
             map.setView([data.lat, data.lng], map.getZoom());
             setTimeout(() => { map.invalidateSize(); }, 200);
