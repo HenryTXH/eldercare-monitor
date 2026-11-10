@@ -63,13 +63,20 @@ document.getElementById('connect-btn').addEventListener('click', async () => {
         await bleCharacteristic.startNotifications();
         bleCharacteristic.addEventListener('characteristicvaluechanged', handleData);
 
+        // Update connection UI state successfully
         statusEl.textContent = "● BLE Connected";
         statusEl.className = "badge connected";
         document.getElementById('connect-btn').textContent = "Connected";
+        
+        // Update patient status header card text on connection
+        const patientCardHeader = document.querySelector('.status-card h2');
+        if (patientCardHeader) patientCardHeader.textContent = "Active Patient Monitoring";
+
     } catch (error) {
         console.error("BLE Error:", error);
-        document.getElementById('conn-status').textContent = "● Disconnected";
-        document.getElementById('conn-status').className = "badge disconnected";
+        const statusEl = document.getElementById('conn-status');
+        statusEl.textContent = "● Disconnected";
+        statusEl.className = "badge disconnected";
     }
 });
 
@@ -78,28 +85,53 @@ function handleData(event) {
     try {
         const data = JSON.parse(value);
 
-        // Update Heart Rate
-        if (data.hr !== undefined) {
-            document.getElementById('hr-value').textContent = data.hr;
+        // Update Heart Rate (supporting common JSON keys: hr, heartRate, bpm)
+        const heartRate = data.hr !== undefined ? data.hr : (data.heartRate !== undefined ? data.heartRate : data.bpm);
+        if (heartRate !== undefined) {
+            document.getElementById('hr-value').textContent = heartRate;
+            document.getElementById('hr-status').textContent = "Live reading";
         }
 
-        // Update SpO2
-        if (data.spo2 !== undefined) {
-            document.getElementById('spo2-value').textContent = data.spo2;
-            document.getElementById('spo2-fill').style.width = data.spo2 + '%';
+        // Update SpO2 Level
+        const oxygen = data.spo2 !== undefined ? data.spo2 : data.oxygen;
+        if (oxygen !== undefined) {
+            document.getElementById('spo2-value').textContent = oxygen;
+            document.getElementById('spo2-fill').style.width = oxygen + '%';
         }
 
-        // Update Accelerometer
-        if (data.accel !== undefined) {
-            document.getElementById('accel-value').textContent = data.accel.toFixed(2);
+        // Update Accelerometer (supporting total magnitude or vector values)
+        const accelVal = data.accel !== undefined ? data.accel : (data.acceleration !== undefined ? data.acceleration : data.acc);
+        if (accelVal !== undefined) {
+            const numericAccel = typeof accelVal === 'object' ? Math.sqrt((accelVal.x||0)**2 + (accelVal.y||0)**2 + (accelVal.z||0)**2) : accelVal;
+            document.getElementById('accel-value').textContent = Number(numericAccel).toFixed(2);
         }
 
-        // Update GPS & Map
-        if (data.lat !== undefined && data.lng !== undefined) {
-            document.getElementById('gps-coords').textContent = `${data.lat.toFixed(4)}°, ${data.lng.toFixed(4)}°`;
+        // Update Fall Detection Status
+        if (data.fall !== undefined || data.fallDetected !== undefined) {
+            const fallState = data.fall !== undefined ? data.fall : data.fallDetected;
+            const fallBadge = document.getElementById('fall-badge');
+            const fallText = document.getElementById('fall-text');
+            if (fallState) {
+                fallBadge.textContent = "● FALL DETECTED";
+                fallBadge.className = "badge disconnected";
+                fallText.textContent = "Emergency alert triggered!";
+            } else {
+                fallBadge.textContent = "● NO (✓)";
+                fallBadge.className = "badge connected";
+                fallText.textContent = "No emergency reported";
+            }
+        }
+
+        // Update GPS & Map Coordinates
+        const latitude = data.lat !== undefined ? data.lat : data.latitude;
+        const longitude = data.lng !== undefined ? data.lng : (data.lon !== undefined ? data.lon : data.longitude);
+        
+        if (latitude !== undefined && longitude !== undefined) {
+            document.getElementById('gps-coords').textContent = `${Number(latitude).toFixed(4)}°, ${Number(longitude).toFixed(4)}°`;
+            document.getElementById('gps-address').textContent = data.address || "GPS Lock Acquired";
             
-            marker.setLatLng([data.lat, data.lng]);
-            map.setView([data.lat, data.lng], map.getZoom());
+            marker.setLatLng([latitude, longitude]);
+            map.setView([latitude, longitude], map.getZoom());
             setTimeout(() => { map.invalidateSize(); }, 200);
         }
     } catch (e) {
