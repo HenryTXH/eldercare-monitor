@@ -10,9 +10,19 @@
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <header>
-        <span class="brand">ELDERCARE · BLE MONITOR</span>
-        <h1>Patient dashboard</h1>
+    <header class="app-header">
+        <div>
+            <span class="brand">ELDERCARE · BLE MONITOR</span>
+            <h1>Patient dashboard</h1>
+        </div>
+        <div class="menu-container">
+            <button id="menu-btn" class="icon-btn" aria-label="Menu">⠇</button>
+            <div id="dropdown-menu" class="dropdown-content hidden">
+                <a href="#" id="menu-settings">Settings</a>
+                <a href="#" id="menu-history">Telemetry History</a>
+                <a href="#" id="menu-about">About</a>
+            </div>
+        </div>
     </header>
 
     <main>
