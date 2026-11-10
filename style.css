@@ -16,8 +16,10 @@ body {
 header.app-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 20px;
+    position: relative;
+    z-index: 100;
 }
 
 header .brand {
@@ -35,16 +37,17 @@ header h1 {
 
 .menu-container {
     position: relative;
+    display: inline-block;
 }
 
 .icon-btn {
-    background: transparent;
-    border: none;
+    background: #18181b;
+    border: 1px solid #27272a;
     color: #f1f1f3;
     font-size: 1.5rem;
     cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 8px;
+    padding: 8px 12px;
+    border-radius: 12px;
 }
 
 .icon-btn:hover {
@@ -54,7 +57,7 @@ header h1 {
 .dropdown-content {
     position: absolute;
     right: 0;
-    top: 36px;
+    top: 48px;
     background-color: #18181b;
     border: 1px solid #27272a;
     border-radius: 12px;
@@ -71,7 +74,7 @@ header h1 {
 
 .dropdown-content a {
     color: #f1f1f3;
-    padding: 10px 16px;
+    padding: 12px 16px;
     text-decoration: none;
     font-size: 0.9rem;
 }
