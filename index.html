@@ -1,29 +1,70 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101010"><meta name="description" content="Local BLE elder care monitor for ESP32"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml"><title>ElderCare Monitor</title>
-<!-- Leaflet CSS CDN -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<link rel="stylesheet" href="style.css"></head>
-<body><main class="shell">
-<header class="top"><div><div class="eyebrow">ELDERCARE · BLE MONITOR</div><h1>Patient dashboard</h1></div><button id="connect" class="button primary">Scan &amp; connect</button></header>
-<section class="patient panel"><div><div id="name" class="patient-name">Waiting for patient data</div><div id="ageAddress" class="sub">Age: — | Address: —</div><div id="phone" class="sub">Tel: —</div></div><div id="connection" class="badge disconnected">● Disconnected</div></section>
-<section class="grid">
-<article class="tile"><div class="label">Heart Rate</div><div class="metric"><span id="hr">—</span><small>bpm</small></div><div class="sub" id="hrNote">Waiting for data</div></article>
-<article class="tile"><div class="label">SpO₂ Level</div><div class="metric"><span id="spo2">—</span><small>%</small></div><div class="progress"><i id="spo2Bar"></i></div></article>
-<article class="tile"><div class="label">Fall Detection</div><div id="fall" class="fall unknown">● UNKNOWN</div><div class="sub" id="fallNote">Status unavailable</div></article>
-<article class="tile"><div class="label">Accelerometer</div><div class="metric"><span id="accel">—</span><small>m/s²</small></div><div class="sub" id="accelNote">Live movement</div></article>
-<article class="tile"><div class="label">GPS Coordinates</div><div class="coords"><span id="lat">—</span><span id="lon">—</span></div><div class="sub" id="gpsAddress">Waiting for location</div></article>
-</section>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElderCare BLE Monitor</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <header>
+        <span class="brand">ELDERCARE · BLE MONITOR</span>
+        <h1>Patient dashboard</h1>
+    </header>
 
-<!-- Live Map Section Container -->
-<section class="panel map-section-container" style="margin-top: 14px; padding: 16px;">
-<div class="chart-head" style="margin-bottom: 10px;"><strong>Live Patient Location <span class="muted">(Map)</span></strong></div>
-<div id="map" style="width: 100%; height: 220px; border-radius: 10px; border: 1px solid #303238; z-index: 1;"></div>
-</section>
+    <main>
+        <button id="connect-btn" class="primary-btn">Scan & connect</button>
 
-<section class="panel chart"><div class="chart-head"><strong>Real-time Telemetry <span class="muted">(Heart Rate)</span></strong><span id="updated" class="sub">No data yet</span></div><canvas id="history" aria-label="Heart rate history"></canvas></section>
-<footer class="controls panel"><div id="message" role="status">Connect to ElderCare-ESP32 to begin.</div><button id="disconnect" class="button" disabled>Disconnect</button></footer>
-<div class="footnote">BLE readings are shown as received. This prototype is not a medical alarm service.</div>
-</main>
-<!-- Leaflet JS CDN -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="app.js" defer></script></body></html>
+        <section class="card status-card">
+            <h2>Waiting for patient data</h2>
+            <p>Age: — | Address: —</p>
+            <p>Tel: —</p>
+            <div id="conn-status" class="badge disconnected">● Disconnected</div>
+        </section>
+
+        <div class="grid-2">
+            <section class="card">
+                <h3>Heart Rate</h3>
+                <div class="metric-value"><span id="hr-value">—</span> <small>bpm</small></div>
+                <p id="hr-status">Waiting for data</p>
+            </section>
+            <section class="card">
+                <h3>SpO2 Level</h3>
+                <div class="metric-value"><span id="spo2-value">—</span> <small>%</small></div>
+                <div class="progress-bar"><div id="spo2-fill" class="fill"></div></div>
+            </section>
+        </div>
+
+        <div class="grid-2">
+            <section class="card">
+                <h3>Fall Detection</h3>
+                <div id="fall-badge" class="badge unknown">● UNKNOWN</div>
+                <p id="fall-text">Status unavailable</p>
+            </section>
+            <section class="card">
+                <h3>Accelerometer</h3>
+                <div class="metric-value"><span id="accel-value">—</span> <small>m/s²</small></div>
+                <p>Live movement</p>
+            </section>
+        </div>
+
+        <section class="card">
+            <h3>GPS Coordinates</h3>
+            <p id="gps-coords"><span>—</span></p>
+            <p id="gps-address">Waiting for location</p>
+        </section>
+
+        <section class="card map-card">
+            <h3>Live Patient Location (Map)</h3>
+            <div id="map"></div>
+        </section>
+    </main>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
