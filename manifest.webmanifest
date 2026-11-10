@@ -1,1 +1,15 @@
-{"name":"ElderCare BLE Monitor","short_name":"ElderCare","description":"BLE dashboard for the ElderCare ESP32","start_url":"./","scope":"./","display":"standalone","orientation":"portrait","background_color":"#101010","theme_color":"#101010","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
+{
+  "name": "ElderCare BLE Monitor",
+  "short_name": "ElderCare",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0e0e10",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2966/2966327.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
