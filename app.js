@@ -1,11 +1,45 @@
-// BLE UUIDs
 const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
 const CHARACTERISTIC_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
 let bluetoothDevice;
 let bleCharacteristic;
+let deferredPrompt;
 
-// Toggle Three-Dot Menu
+// PWA Install Prompt handling
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('install-btn').classList.remove('hidden');
+});
+
+const triggerInstall = async () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            document.getElementById('install-btn').classList.add('hidden');
+        }
+        deferredPrompt = null;
+    } else {
+        alert("To install, tap Chrome's top-right three dots and select 'Add to Home screen' or 'Install app'.");
+    }
+};
+
+document.getElementById('install-btn').addEventListener('click', triggerInstall);
+document.getElementById('install-menu-btn').addEventListener('click', (e) => {
+    e.preventDefault();
+    dropdownMenu.classList.add('hidden');
+    triggerInstall();
+});
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error', err));
+    });
+}
+
+// Menu Toggle
 const menuBtn = document.getElementById('menu-btn');
 const dropdownMenu = document.getElementById('dropdown-menu');
 
@@ -20,7 +54,6 @@ window.addEventListener('click', () => {
     }
 });
 
-// Menu item actions
 document.getElementById('menu-settings').addEventListener('click', (e) => {
     e.preventDefault();
     alert('Settings: Configure alert thresholds and BLE parameters.');
@@ -36,7 +69,7 @@ document.getElementById('menu-about').addEventListener('click', (e) => {
     alert('ElderCare BLE Monitor v1.2 - Connected to ESP32 Gateway');
 });
 
-// Initialize Leaflet Map centered on USM / default location
+// Map Initialization
 let map = L.map('map').setView([5.1521, 100.4950], 15);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -63,12 +96,10 @@ document.getElementById('connect-btn').addEventListener('click', async () => {
         await bleCharacteristic.startNotifications();
         bleCharacteristic.addEventListener('characteristicvaluechanged', handleData);
 
-        // Update connection UI state successfully
         statusEl.textContent = "● BLE Connected";
         statusEl.className = "badge connected";
         document.getElementById('connect-btn').textContent = "Connected";
         
-        // Update patient status header card text on connection
         const patientCardHeader = document.querySelector('.status-card h2');
         if (patientCardHeader) patientCardHeader.textContent = "Active Patient Monitoring";
 
@@ -82,33 +113,38 @@ document.getElementById('connect-btn').addEventListener('click', async () => {
 
 function handleData(event) {
     const value = new TextDecoder().decode(event.target.value);
+    console.log("Raw BLE Data:", value);
     try {
         const data = JSON.parse(value);
 
-        // Update Heart Rate (supporting common JSON keys: hr, heartRate, bpm)
-        const heartRate = data.hr !== undefined ? data.hr : (data.heartRate !== undefined ? data.heartRate : data.bpm);
+        // Heart Rate (Supports hr, heartRate, bpm, heart_rate, pulse)
+        const heartRate = data.hr !== undefined ? data.hr : 
+                          (data.heartRate !== undefined ? data.heartRate : 
+                          (data.bpm !== undefined ? data.bpm : 
+                          (data.heart_rate !== undefined ? data.heart_rate : data.pulse)));
+        
         if (heartRate !== undefined) {
             document.getElementById('hr-value').textContent = heartRate;
             document.getElementById('hr-status').textContent = "Live reading";
         }
 
-        // Update SpO2 Level
-        const oxygen = data.spo2 !== undefined ? data.spo2 : data.oxygen;
+        // SpO2 Level
+        const oxygen = data.spo2 !== undefined ? data.spo2 : (data.oxygen !== undefined ? data.oxygen : data.spO2);
         if (oxygen !== undefined) {
             document.getElementById('spo2-value').textContent = oxygen;
             document.getElementById('spo2-fill').style.width = oxygen + '%';
         }
 
-        // Update Accelerometer (supporting total magnitude or vector values)
+        // Accelerometer
         const accelVal = data.accel !== undefined ? data.accel : (data.acceleration !== undefined ? data.acceleration : data.acc);
         if (accelVal !== undefined) {
             const numericAccel = typeof accelVal === 'object' ? Math.sqrt((accelVal.x||0)**2 + (accelVal.y||0)**2 + (accelVal.z||0)**2) : accelVal;
             document.getElementById('accel-value').textContent = Number(numericAccel).toFixed(2);
         }
 
-        // Update Fall Detection Status
-        if (data.fall !== undefined || data.fallDetected !== undefined) {
-            const fallState = data.fall !== undefined ? data.fall : data.fallDetected;
+        // Fall Detection
+        const fallState = data.fall !== undefined ? data.fall : (data.fallDetected !== undefined ? data.fallDetected : data.fall_detected);
+        if (fallState !== undefined) {
             const fallBadge = document.getElementById('fall-badge');
             const fallText = document.getElementById('fall-text');
             if (fallState) {
@@ -122,9 +158,9 @@ function handleData(event) {
             }
         }
 
-        // Update GPS & Map Coordinates
-        const latitude = data.lat !== undefined ? data.lat : data.latitude;
-        const longitude = data.lng !== undefined ? data.lng : (data.lon !== undefined ? data.lon : data.longitude);
+        // GPS Coordinates
+        const latitude = data.lat !== undefined ? data.lat : (data.latitude !== undefined ? data.latitude : data.GPS_lat);
+        const longitude = data.lng !== undefined ? data.lng : (data.lon !== undefined ? data.lon : (data.longitude !== undefined ? data.longitude : data.GPS_lng));
         
         if (latitude !== undefined && longitude !== undefined) {
             document.getElementById('gps-coords').textContent = `${Number(latitude).toFixed(4)}°, ${Number(longitude).toFixed(4)}°`;
@@ -137,4 +173,4 @@ function handleData(event) {
     } catch (e) {
         console.error("Failed to parse incoming BLE JSON:", value);
     }
-}
+                                                              }
